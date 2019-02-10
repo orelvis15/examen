@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ExamenAndroid</string>
+
+    <string name="monto">Ingrese el monto:</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="error_monto">El monto no es un valor permitido</string>
+    <string name="medio_de_pago">Medio de Pago:</string>
+    <string name="banco">Banco:</string>
+    <string name="cuotas">Cuotas:</string>
+    <string name="volver">Volver</string>
 </resources>
