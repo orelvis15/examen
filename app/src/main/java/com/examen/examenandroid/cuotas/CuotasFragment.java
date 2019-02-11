@@ -11,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -52,6 +55,8 @@ public class CuotasFragment extends Fragment implements Model.ModelUpdate {
 
     private TextView smsEmpty;
 
+    private ProgressBar progress;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +68,8 @@ public class CuotasFragment extends Fragment implements Model.ModelUpdate {
         requestQueue = Volley.newRequestQueue(getActivity());
 
         smsEmpty = layout.findViewById(R.id.id_sms_empty);
+
+        progress = layout.findViewById(R.id.id_progress);
 
         listCuota = new ArrayList();
 
@@ -182,11 +189,19 @@ public class CuotasFragment extends Fragment implements Model.ModelUpdate {
     public void UpdateView(ArrayList data) {
 
         if (data != null){
+
+            final LayoutAnimationController controller =
+                    AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_fall_down);
+
+            RecyclerCuota.setLayoutAnimation(controller);
+
             CuotasAdapter adapter = new CuotasAdapter(getActivity(), data);
             RecyclerCuota.setAdapter(adapter);
         }else{
             smsEmpty.setVisibility(View.VISIBLE);
         }
+
+        progress.setVisibility(View.INVISIBLE);
 
     }
 

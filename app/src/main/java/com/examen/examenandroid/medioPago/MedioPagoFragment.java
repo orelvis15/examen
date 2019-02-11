@@ -2,6 +2,7 @@ package com.examen.examenandroid.medioPago;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -18,6 +23,7 @@ import com.examen.examenandroid.MainActivity;
 import com.examen.examenandroid.Model.Model;
 import com.examen.examenandroid.R;
 import com.examen.examenandroid.ViewModel;
+import com.securepreferences.SecurePreferences;
 
 import java.util.ArrayList;
 
@@ -60,6 +66,10 @@ public class MedioPagoFragment extends Fragment implements Model.ModelUpdate {
 
     private ViewModel viewModel;
 
+    private ProgressBar progress;
+
+    private TextView smsEmpty;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,6 +79,10 @@ public class MedioPagoFragment extends Fragment implements Model.ModelUpdate {
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         requestQueue = Volley.newRequestQueue(getActivity());
+
+        progress = layout.findViewById(R.id.id_progress);
+
+        smsEmpty = layout.findViewById(R.id.id_sms_empty);
 
         listMedioPago = new ArrayList();
 
@@ -179,8 +193,18 @@ public class MedioPagoFragment extends Fragment implements Model.ModelUpdate {
     public void UpdateView(ArrayList data) {
         if (data != null){
             MedioPagoAdapter adapter = new MedioPagoAdapter(getActivity(), data);
+
+            final LayoutAnimationController controller =
+                    AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_fall_down);
+
+            RecyclerMedioPago.setLayoutAnimation(controller);
+
             RecyclerMedioPago.setAdapter(adapter);
+        }else {
+            smsEmpty.setVisibility(View.VISIBLE);
         }
+
+        progress.setVisibility(View.INVISIBLE);
 
     }
 
@@ -188,5 +212,6 @@ public class MedioPagoFragment extends Fragment implements Model.ModelUpdate {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 
 }

@@ -8,4 +8,5 @@
     <string name="banco">Banco:</string>
     <string name="cuotas">Cuotas:</string>
     <string name="volver">Volver</string>
+    <string name="no_hay_informaci_n_para_los_datos_seleccionados">No hay información para los datos seleccionados</string>
 </resources>

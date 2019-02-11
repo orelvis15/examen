@@ -1,6 +1,7 @@
 package com.examen.examenandroid.Model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.android.volley.Request;
@@ -12,10 +13,12 @@ import com.examen.examenandroid.ViewModel;
 import com.examen.examenandroid.banco.Banco;
 import com.examen.examenandroid.cuotas.Cuotas;
 import com.examen.examenandroid.medioPago.MedioPago;
+import com.securepreferences.SecurePreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -27,6 +30,7 @@ public class Model {
     private ArrayList listMedioPago;
     private ArrayList listBanco;
     private ArrayList listCuota;
+    private Context context;
 
     public Model(ViewModel viewModel, Context context, ModelUpdate viewCallback) {
         this.viewModel = viewModel;
@@ -35,27 +39,40 @@ public class Model {
         listBanco = new ArrayList();
         listCuota = new ArrayList();
         this.viewCallback = viewCallback;
+        this.context = context;
+
     }
 
     public void getMedioPagoData() {
-        new AsyncLoadMedioPagoData().execute();
+        new AsyncLoadMedioPagoData(context).execute();
     }
 
     public void getBancoData() {
-        new AsyncLoadBancoData().execute();
+        new AsyncLoadBancoData(context).execute();
     }
 
     public void getCuotasData() {
-        new AsyncLoadCuotasData().execute();
+        new AsyncLoadCuotasData(context).execute();
     }
 
     private class AsyncLoadMedioPagoData extends AsyncTask<Void, Void, ArrayList> {
+
+        WeakReference<Context> context;
+
+        public AsyncLoadMedioPagoData(Context context) {
+            this.context = new WeakReference(context);
+        }
 
         @Override
         protected ArrayList doInBackground(Void... voids) {
 
             if (viewModel.getListMedioPago().isEmpty()) {
-                String url = "https://api.mercadopago.com/v1/payment_methods?public_key=444a9ef5-8a6b-429f-abdf-587639155d88";
+
+                SharedPreferences preferences = new SecurePreferences(context.get(), "lol", "my_user_prefs.xml");
+
+                String public_key = preferences.getString("public_key","");
+
+                String url = "https://api.mercadopago.com/v1/payment_methods?public_key=" + public_key;
 
                 final RequestFuture<JSONArray> future = RequestFuture.newFuture();
 
@@ -84,7 +101,7 @@ public class Model {
                             e.printStackTrace();
                         }
                     }
-
+                    viewModel.setListMedioPago(listMedioPago);
                     return listMedioPago;
 
                 } catch (InterruptedException e) {
@@ -110,14 +127,24 @@ public class Model {
 
     private class AsyncLoadBancoData extends AsyncTask<Void, Void, ArrayList> {
 
+        WeakReference<Context> context;
+
+        public AsyncLoadBancoData(Context context) {
+            this.context = new WeakReference(context);
+        }
+
         @Override
         protected ArrayList doInBackground(Void... voids) {
 
-            if (viewModel.getListMedioPago().isEmpty()) {
+            if (viewModel.getListBanco().isEmpty()) {
+
+                SharedPreferences preferences = new SecurePreferences(context.get(), "lol", "my_user_prefs.xml");
+
+                String public_key = preferences.getString("public_key","");
 
                 String payment_method_id = viewModel.getMedioPagoSelect().getId();
 
-                String url = "https://api.mercadopago.com/v1/payment_methods/card_issuers?public_key=444a9ef5-8a6b-429f-abdf-587639155d88&payment_method_id=" + payment_method_id;
+                String url = "https://api.mercadopago.com/v1/payment_methods/card_issuers?public_key="+public_key+"&payment_method_id=" + payment_method_id;
 
                 final RequestFuture<JSONArray> future = RequestFuture.newFuture();
 
@@ -142,7 +169,7 @@ public class Model {
                             e.printStackTrace();
                         }
                     }
-
+                    viewModel.setListBanco(listBanco);
                     return listBanco;
 
                 } catch (InterruptedException e) {
@@ -167,16 +194,27 @@ public class Model {
 
     private class AsyncLoadCuotasData extends AsyncTask<Void, Void, ArrayList> {
 
+        WeakReference<Context> context;
+
+        public AsyncLoadCuotasData(Context context) {
+            this.context = new WeakReference(context);
+        }
+
         @Override
         protected ArrayList doInBackground(Void... voids) {
 
-            if (viewModel.getListMedioPago().isEmpty()) {
+            if (viewModel.getListCuotas().isEmpty()) {
+
+                SharedPreferences preferences = new SecurePreferences(context.get(), "lol", "my_user_prefs.xml");
+
+                String public_key = preferences.getString("public_key","");
+
 
                 String payment_method_id = viewModel.getMedioPagoSelect().getId();
                 String amount = viewModel.getMonto().toString();
                 String banco = viewModel.getBancoSelect().getId();
 
-                String url = "https://api.mercadopago.com/v1/payment_methods/installments?public_key=444a9ef5-8a6b-429f-abdf-587639155d88&payment_method_id="
+                String url = "https://api.mercadopago.com/v1/payment_methods/installments?public_key="+public_key+"&payment_method_id="
                         + payment_method_id + "&amount=" + amount + "&issuer.id="+banco;
 
                 final RequestFuture<JSONArray> future = RequestFuture.newFuture();
@@ -210,7 +248,7 @@ public class Model {
                         }
 
                     }
-
+                    viewModel.setListCuotas(listCuota);
                     return listCuota;
 
                 } catch (InterruptedException e) {

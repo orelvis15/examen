@@ -11,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -55,6 +58,8 @@ public class BancoFragment extends Fragment implements Model.ModelUpdate {
 
     private TextView smsEmpty;
 
+    private ProgressBar progress;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,6 +72,8 @@ public class BancoFragment extends Fragment implements Model.ModelUpdate {
         requestQueue = Volley.newRequestQueue(getActivity());
 
         smsEmpty = layout.findViewById(R.id.id_sms_empty);
+
+        progress = layout.findViewById(R.id.id_progress);
 
         listBanco = new ArrayList();
 
@@ -177,22 +184,20 @@ public class BancoFragment extends Fragment implements Model.ModelUpdate {
         if (data == null){
             smsEmpty.setVisibility(View.VISIBLE);
         }else {
+
+            final LayoutAnimationController controller =
+                    AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_fall_down);
+
+            RecyclerBanco.setLayoutAnimation(controller);
+
             smsEmpty.setVisibility(View.INVISIBLE);
             BancoAdapter adapter = new BancoAdapter(getActivity(), data);
             RecyclerBanco.setAdapter(adapter);
         }
+
+        progress.setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }

@@ -52,6 +52,7 @@ public class MontoFragment extends Fragment {
         viewModel = ViewModelProviders.of(getActivity()).get(ViewModel.class);
 
         ((MainActivity)getActivity()).getSupportActionBar().setTitle("Monto");
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         montoEt = layout.findViewById(R.id.id_monto);
         Button nextBtn = layout.findViewById(R.id.id_next);

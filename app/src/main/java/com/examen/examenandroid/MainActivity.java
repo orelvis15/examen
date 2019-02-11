@@ -1,6 +1,7 @@
 package com.examen.examenandroid;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ import com.examen.examenandroid.cuotas.Cuotas;
 import com.examen.examenandroid.cuotas.CuotasFragment;
 import com.examen.examenandroid.medioPago.MedioPago;
 import com.examen.examenandroid.medioPago.MedioPagoFragment;
+import com.securepreferences.SecurePreferences;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MontoFragment.OnFragmentInteractionListener,
         MedioPagoFragment.OnFragmentInteractionListener,
@@ -66,6 +70,14 @@ public class MainActivity extends AppCompatActivity implements MontoFragment.OnF
             currentFragment = MontoFragment.TAG;
         }
 
+        /**
+         * salva de la public_key
+         */
+
+        SharedPreferences.Editor editor = new SecurePreferences(this, "lol", "my_user_prefs.xml").edit();
+        editor.putString ("public_key", "444a9ef5-8a6b-429f-abdf-587639155d88");
+        editor.apply ();
+
     }
 
     @Override
@@ -76,12 +88,18 @@ public class MainActivity extends AppCompatActivity implements MontoFragment.OnF
         switch (name){
             case MedioPagoFragment.TAG:{
                 currentFragment = MontoFragment.TAG;
+                viewModel.setListMedioPago(new ArrayList());
+                break;
             }
             case BancoFragment.TAG:{
                 currentFragment = MedioPagoFragment.TAG;
+                viewModel.setListBanco(new ArrayList());
+                break;
             }
             case CuotasFragment.TAG:{
                 currentFragment = BancoFragment.TAG;
+                viewModel.setListCuotas(new ArrayList());
+                break;
             }
         }
         if (!name.equals(MontoFragment.TAG) && !name.equals(ResumenFragment.TAG)){
